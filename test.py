@@ -23,11 +23,6 @@ class Root (object):
             'password': hashlib.sha512("").hexdigest(),
             'email': "test@example.com",
         },
-        'stefano': {
-            'user_id': '1',
-            'password': hashlib.sha512("password").hexdigest(),
-            'email': "stefano.palazzo@gmail.com",
-        }
     }
     messages = []
     stars = collections.defaultdict(set)
@@ -234,7 +229,7 @@ class Root (object):
 
 cherrypy.quickstart(Root(), config={
     'global':{
-        'log.screen': False,
+        'log.screen': True,
         'server.socket_host': '0.0.0.0',
         'server.socket_port': 8080,
         'tools.sessions.on': True,
