@@ -2,7 +2,7 @@ This is the Victory Chat
 
 In order to run it, you need to install a few things
 
- - Python
+ - Python 2.7
  - CherryPy 3
  - Mako Templates
 
@@ -19,5 +19,7 @@ You might want to change a few things at the bottom of test.py:
 
  - Make 'log.screen': True
  - Change the port numer
+
+To run Victory Chat as an init.d service move `victory` to `/etc/init.d/` and update the `VICTORY_BIN` in `victory` to the `test.py` file or create a symlink to `test.py` at `/usr/bin/victory-chat`
 
 

@@ -1,0 +1,117 @@
+#!/bin/bash
+####
+## This file now belongs to the Victory Chat project
+## All rights reserved.
+##
+## Author: Marco Ceppi, 2011/06/08
+##
+## /etc/init.d/victory
+####
+
+### BEGIN INIT INFO
+# Provides:          victory
+# Required-Start:    $network
+# Required-Stop:
+# Default-Start:     3 5
+# Default-Stop:      0 1 2 6
+# Short-Description: Victory Chat service
+# Description:       A simple chat interface written in Python.
+### END INIT INFO
+
+PYTHON=`which python2.7`
+VICTORY_BIN=/usr/bin/victory-chat
+VICTORY_CONFIG=/etc/victory.cfg
+
+test -x $VICTORY_BIN ||
+{
+	echo "$VICTORY_BIN not installed";
+	if [ "$1" = "stop" ]; then
+		exit 0;
+	else
+		exit 5;
+	fi
+}
+
+test -r $VICTORY_CONFIG ||
+{
+	echo "$VICTORY_CONFIG not existing";
+	if [ "$1" = "stop" ]; then
+		exit 0
+        else
+		exit 6
+	fi
+}
+
+# Read config
+#. $VICTORY_CONFIG
+
+. /etc/rc.status
+rc_reset
+
+case "$1" in
+	start)
+		echo -n "Starting victory chat "
+		## Start daemon with startproc(8). If this fails
+		## the return value is set appropriately by startproc.
+		startproc $PYTHON $BAR_BIN
+
+		# Remember status and be verbose
+		rc_status -v
+	;;
+	stop)
+		echo -n "Shutting down victory chat "
+		## Stop daemon with killproc(8) and if this fails
+		# killproc sets the return value according to LSB.
+
+		killproc -TERM $PYTHON $BAR_BIN
+
+		# Remember status and be verbose
+		rc_status -v
+	;;
+	restart)
+		## Stop the service and regardless of whether it was
+		## running or not, start it again.
+		$0 stop
+		$0 start
+
+		# Remember status and be quiet
+		rc_status
+	;;
+	reload)
+		# If it supports signaling:
+		echo -n "Reload victory chat "
+		killproc -HUP $PYTHON $BAR_BIN
+		#touch /var/run/BAR.pid
+		rc_status -v
+
+		## Otherwise if it does not support reload:
+		#rc_failed 3
+		#rc_status -v
+	;;
+	status)
+		echo -n "Checking for victory chat "
+		## Check status with checkproc(8), if process is running
+		## checkproc will return with exit status 0.
+
+		# Return value is slightly different for the status command:
+		# 0 - service up and running
+		# 1 - service dead, but /var/run/  pid  file exists
+		# 2 - service dead, but /var/lock/ lock file exists
+		# 3 - service not running (unused)
+		# 4 - service status unknown :-(
+		# 5--199 reserved (5--99 LSB, 100--149 distro, 150--199 appl.)
+
+		# NOTE: checkproc returns LSB compliant status values.
+		checkproc $PYTHON $BAR_BIN
+		# NOTE: rc_status knows that we called this init script with
+		# "status" option and adapts its messages accordingly.
+		rc_status -v
+	;;
+	*)
+		## If no parameters are given, print which are avaiable.
+		echo "Usage: $0 {start|stop|status|restart|reload}"
+		exit 1
+	;;
+esac
+
+rc_exit
