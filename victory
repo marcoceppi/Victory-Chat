@@ -42,7 +42,7 @@ test -r $VICTORY_CONFIG ||
 	fi
 }
 
-# Read config
+# Read config, eventually
 #. $VICTORY_CONFIG
 
 . /etc/rc.status
@@ -53,28 +53,23 @@ case "$1" in
 		echo -n "Starting victory chat "
 		## Start daemon with startproc(8). If this fails
 		## the return value is set appropriately by startproc.
-		startproc $PYTHON $BAR_BIN
+		startproc -l /var/log/victory-chat.log $PYTHON $BAR_BIN
 
-		# Remember status and be verbose
 		rc_status -v
 	;;
 	stop)
 		echo -n "Shutting down victory chat "
-		## Stop daemon with killproc(8) and if this fails
-		# killproc sets the return value according to LSB.
+		## Stop daemon with killproc(8)
 
 		killproc -TERM $PYTHON $BAR_BIN
 
-		# Remember status and be verbose
 		rc_status -v
 	;;
 	restart)
-		## Stop the service and regardless of whether it was
-		## running or not, start it again.
+		## Stop the service and regardless of whether it was running or not, start it again.
 		$0 stop
 		$0 start
 
-		# Remember status and be quiet
 		rc_status
 	;;
 	reload)
